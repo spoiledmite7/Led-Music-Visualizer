@@ -4,7 +4,7 @@
 #define NOISE       20            // takes out random noises 
 #define LED_PIN     2             // pin to led 
 #define NUM_LEDS    300           // number of leds 
-#define SAMPLES 512               // 1024 // 2048 // 4096 amout of samples per sec 
+#define SAMPLES 512               // 1024 // 2048 // 4096 amout of samples per sec // more samples more accurate data but slower for code 
 #define SAMPLING_FREQUENCY 40000 // freq samples div /2 bc negitves 
 #define updateLEDS 4              // leds up date per sec 
 
