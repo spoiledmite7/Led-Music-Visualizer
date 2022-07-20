@@ -1,0 +1,107 @@
+#include <FastLED.h>
+#include "arduinoFFT.h"
+
+#define NOISE       75
+#define LED_PIN     2
+#define NUM_LEDS    300
+#define SAMPLES 2048
+#define SAMPLING_FREQUENCY 40000
+#define updateLEDS 8
+int i;
+
+unsigned int samplingPeriod;
+unsigned long microSecconds;
+
+double vReal [SAMPLES];
+double vImag [SAMPLES];
+arduinoFFT FFT = arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
+CRGB leds[NUM_LEDS];
+
+void setup() {
+    Serial.begin(115200);
+    samplingPeriod = round(1000000*(1.0/SAMPLING_FREQUENCY));
+
+     FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+}
+
+void loop(){ 
+ i=0;
+while (i<SAMPLES) {
+   
+    unsigned long time = millis();
+   for (int i = 0; i < SAMPLES; i++) {
+    microSecconds = micros();
+    vReal[i] = analogRead(21); // A conversion takes about 9.7uS on an ESP32
+    vImag[i] = 0;
+   // while ((micros() - microSecconds) < samplingPeriod) { /* chill */ }
+  FFT.DCRemoval();
+  FFT.Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+  FFT.Compute(FFT_FORWARD);
+  FFT.ComplexToMagnitude();
+
+  }
+  }  
+
+// Shift all LEDs to the right by updateLEDS number each time
+
+    
+  while (vReal[i] > NOISE) 
+  {
+    
+     for (int i = 2; i < (SAMPLES/2); i++){       // Don't use sample 0 and only first SAMPLES/2 are usable. Each array element represents a frequency bin and its value the amplitude.
+     for(int i = NUM_LEDS - 1; i >= updateLEDS; i--) {
+        leds[i] = leds[i - updateLEDS];
+        Serial.println (i);
+    if (i>8   && i<=15  ) // sample = 9 hz starts a 4  
+    leds[i] = CRGB ( 246, 0, 0);
+        FastLED.show();
+    if (i>16   && i<=30  )
+    leds[i] = CRGB ( 255, 140, 0);
+        FastLED.show();
+    if (i>30   && i<=80  )
+    leds[i] = CRGB ( 255, 238, 0);
+        FastLED.show();
+    if (i>81   && i<=120  )
+    leds[i] = CRGB ( 77, 233, 76);
+        FastLED.show();
+    if (i>121  && i<=160  )
+    leds[i] = CRGB ( 55, 131, 255);
+        FastLED.show();
+    if (i>161   && i<=200  )
+    leds[i] = CRGB ( 72, 21, 170);
+    }
+     }
+      }
+       }
+ 
+    /*
+    FastLED.show();
+    if (i>16   && i<=17  )
+    leds[i] = CRGB ( 0, 200, 0);
+    FastLED.show();
+    if (i>18   && i<=19  )
+    leds[i] = CRGB ( 0, 255, 0);
+    FastLED.show();
+    if (i>20   && i<=21  )
+    leds[i] = CRGB ( 140, 140, 140);
+    FastLED.show();
+    if (i>22   && i<=23  )
+    leds[i] = CRGB ( 140, 180, 200);
+    FastLED.show();
+    if (i>24   && i<=25  )
+    leds[i] = CRGB ( 100, 10, 30);
+    FastLED.show();
+    if (i>26  && i<=27  )leds[i] = CRGB ( 200, 0, 0);
+    FastLED.show();
+    if (i>28   && i<=29  )
+    leds[i] = CRGB ( 30, 0, 200);
+    FastLED.show();
+    if (i>30   && i<=31  )
+    leds[i] = CRGB ( 60, 225, 0);
+    FastLED.show();
+    if (i>32   && i<=33  )
+    leds[i] = CRGB ( 255, 255, 0);
+    FastLED.show();
+    if (i>34   && i<=0  )
+    leds[i] = CRGB ( 0, 255, 30);
+    FastLED.show();*/ 
